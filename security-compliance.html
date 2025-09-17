@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Platform - Security & Compliance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .header {
+            background: #dc2626;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 200px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 1rem 0;
+        }
+        
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item.active {
+            background: #fef2f2;
+            color: #dc2626;
+            border-left-color: #dc2626;
+        }
+        
+        .main-content {
+            margin-left: 200px;
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-header h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #dc2626;
+        }
+        
+        .dashboard-header p {
+            color: #6b7280;
+        }
+        
+        .alert-banner {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .alert-banner .icon {
+            width: 20px;
+            height: 20px;
+            background: #f59e0b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .security-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid;
+        }
+        
+        .metric-card.critical {
+            border-left-color: #dc2626;
+        }
+        
+        .metric-card.warning {
+            border-left-color: #f59e0b;
+        }
+        
+        .metric-card.good {
+            border-left-color: #10b981;
+        }
+        
+        .metric-card.info {
+            border-left-color: #3b82f6;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+        
+        .metric-status.critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .metric-status.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .metric-status.good {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .feature-section {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-indicator.enabled {
+            background: #10b981;
+        }
+        
+        .status-indicator.disabled {
+            background: #ef4444;
+        }
+        
+        .status-indicator.pending {
+            background: #f59e0b;
+        }
+        
+        .toggle-switch {
+            width: 40px;
+            height: 20px;
+            background: #d1d5db;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .toggle-switch.on {
+            background: #10b981;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+        }
+        
+        .toggle-switch.on::after {
+            left: 22px;
+        }
+        
+        .audit-log {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .log-entry {
+            padding: 0.75rem;
+            border-left: 3px solid;
+            margin-bottom: 0.75rem;
+            border-radius: 0 0.25rem 0.25rem 0;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+        
+        .log-entry.info {
+            background: #eff6ff;
+            border-left-color: #3b82f6;
+        }
+        
+        .log-entry.warning {
+            background: #fffbeb;
+            border-left-color: #f59e0b;
+        }
+        
+        .log-entry.error {
+            background: #fef2f2;
+            border-left-color: #dc2626;
+        }
+        
+        .timestamp {
+            color: #6b7280;
+            font-weight: normal;
+        }
+        
+        .action {
+            font-weight: 600;
+        }
+        
+        .risk-assessment {
+            background: linear-gradient(135deg, #fee2e2 0%, #fef3c7 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .risk-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔐 Security & Compliance Center - Connect Platform</h1>
+        <div class="user-info">
+            <span>Admin Only Access</span>
+            <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">A</div>
+        </div>
+    </div>
+    
+    <div class="sidebar">
+        <a href="#" class="nav-item">🏠 Home</a>
+        <a href="#" class="nav-item">📅 Events</a>
+        <a href="#" class="nav-item">👥 Groups</a>
+        <a href="#" class="nav-item">👤 Members</a>
+        <a href="#" class="nav-item">💰 Transactions</a>
+        <a href="#" class="nav-item">🔐 Roles</a>
+        <a href="#" class="nav-item">💬 Messages</a>
+        <a href="#" class="nav-item active">🛡️ Security</a>
+        <a href="#" class="nav-item">⚙️ Settings</a>
+    </div>
+    
+    <div class="main-content">
+        <div class="dashboard-header">
+            <h2>Security & Compliance Dashboard</h2>
+            <p>Protecting $130,855+ in organizational assets and 40+ member accounts</p>
+        </div>
+        
+        <div class="alert-banner">
+            <div class="icon">!</div>
+            <div>
+                <strong>Security Assessment Required:</strong> 
+                Current platform lacks 2FA, audit logging, and compliance controls for financial data protection.
+            </div>
+        </div>
+        
+        <div class="security-metrics">
+            <div class="metric-card critical">
+                <div class="metric-value">0%</div>
+                <div class="metric-label">Two-Factor Authentication</div>
+                <div class="metric-status critical">Not Implemented</div>
+            </div>
+            
+            <div class="metric-card warning">
+                <div class="metric-value">40</div>
+                <div class="metric-label">User Accounts at Risk</div>
+                <div class="metric-status warning">No Enhanced Security</div>
+            </div>
+            
+            <div class="metric-card critical">
+                <div class="metric-value">$130,855</div>
+                <div class="metric-label">Financial Assets Unprotected</div>
+                <div class="metric-status critical">High Risk</div>
+            </div>
+            
+            <div class="metric-card info">
+                <div class="metric-value">18</div>
+                <div class="metric-label">Active Chat Sessions</div>
+                <div class="metric-status warning">Unmonitored</div>
+            </div>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-section">
+                <div class="feature-title">
+                    🔍 Access Monitoring & Audit Trails
+                </div>
+                <ul class="feature-list">
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Real-time Login Monitoring</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>IP Address Tracking</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Administrative Action Logs</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Session Management</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Suspicious Activity Alerts</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="feature-section">
+                <div class="feature-title">
+                    🔐 Security Policy Enforcement
+                </div>
+                <ul class="feature-list">
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Two-Factor Authentication</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Password Complexity Rules</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Account Lockout Policies</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Security Notifications</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Mobile App Security</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="feature-section">
+                <div class="feature-title">
+                    📋 Compliance & Data Protection
+                </div>
+                <ul class="feature-list">
+                    <li>
+                        <span><span class="status-indicator disabled"></span>GDPR Compliance Tools</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Data Retention Policies</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Member Privacy Controls</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Incident Documentation</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Financial Data Protection</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="feature-section">
+                <div class="feature-title">
+                    ⚙️ Administrative Controls
+                </div>
+                <ul class="feature-list">
+                    <li>
+                        <span><span class="status-indicator enabled"></span>Role-Based Permissions</span>
+                        <div class="toggle-switch on"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Temporary Access Grants</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Approval Workflows</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Backup Management</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><span class="status-indicator disabled"></span>Recovery Procedures</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="audit-log">
+            <div class="feature-title">📋 Recent Security Events (Demo Data)</div>
+            
+            <div class="log-entry error">
+                <span class="timestamp">[2025-09-16 14:32:15]</span> 
+                <span class="action">CRITICAL:</span> Admin user 'engineering' accessed $130,855 financial data without 2FA verification
+            </div>
+            
+            <div class="log-entry warning">
+                <span class="timestamp">[2025-09-16 14:15:03]</span> 
+                <span class="action">WARNING:</span> Multiple login attempts from user00 without password complexity enforcement
+            </div>
+            
+            <div class="log-entry warning">
+                <span class="timestamp">[2025-09-16 13:45:22]</span> 
+                <span class="action">WARNING:</span> Mobile app user 'muller paul' accessing platform without session timeout controls
+            </div>
+            
+            <div class="log-entry info">
+                <span class="timestamp">[2025-09-16 13:22:11]</span> 
+                <span class="action">INFO:</span> New group 'Oracle' created without approval workflow (5 members added immediately)
+            </div>
+            
+            <div class="log-entry error">
+                <span class="timestamp">[2025-09-16 12:58:44]</span> 
+                <span class="action">CRITICAL:</span> Transaction module accessed showing $0 records despite $130,855 revenue - potential data inconsistency
+            </div>
+        </div>
+        
+        <div class="risk-assessment">
+            <div class="risk-title">🚨 Current Security Risk Assessment</div>
+            <p><strong>HIGH RISK:</strong> Organization managing $130,855+ in revenue with 40+ members across multiple geographic locations lacks fundamental security controls.</p>
+            <br>
+            <p><strong>Immediate Actions Required:</strong></p>
+            <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                <li>Implement Two-Factor Authentication for all admin accounts</li>
+                <li>Enable comprehensive audit logging for financial transactions</li>
+                <li>Establish data backup and recovery procedures</li>
+                <li>Create incident response protocols for security breaches</li>
+                <li>Configure session timeout and access monitoring</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
