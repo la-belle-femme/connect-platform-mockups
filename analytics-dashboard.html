@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Platform - Analytics Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .header {
+            background: #7c3aed;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 200px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 1rem 0;
+        }
+        
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item.active {
+            background: #f3f4f6;
+            color: #7c3aed;
+            border-left-color: #7c3aed;
+        }
+        
+        .main-content {
+            margin-left: 200px;
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-header h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-header p {
+            color: #6b7280;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid;
+        }
+        
+        .metric-card.revenue {
+            border-left-color: #10b981;
+        }
+        
+        .metric-card.members {
+            border-left-color: #3b82f6;
+        }
+        
+        .metric-card.events {
+            border-left-color: #f59e0b;
+        }
+        
+        .metric-card.engagement {
+            border-left-color: #8b5cf6;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-change {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+        
+        .metric-change.positive {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .metric-change.neutral {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%), 
+                        linear-gradient(-45deg, #f3f4f6 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #f3f4f6 75%), 
+                        linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-style: italic;
+        }
+        
+        .insights-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .insight-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .insight-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .insight-list {
+            list-style: none;
+        }
+        
+        .insight-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .insight-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .group-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge.high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .badge.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge.low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Analytics Dashboard - Connect Platform</h1>
+        <div class="user-info">
+            <span>Admin View</span>
+            <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">A</div>
+        </div>
+    </div>
+    
+    <div class="sidebar">
+        <a href="#" class="nav-item">🏠 Home</a>
+        <a href="#" class="nav-item">📅 Events</a>
+        <a href="#" class="nav-item">👥 Groups</a>
+        <a href="#" class="nav-item">👤 Members</a>
+        <a href="#" class="nav-item">💰 Transactions</a>
+        <a href="#" class="nav-item">🔐 Roles</a>
+        <a href="#" class="nav-item">💬 Messages</a>
+        <a href="#" class="nav-item active">📊 Analytics</a>
+        <a href="#" class="nav-item">⚙️ Settings</a>
+    </div>
+    
+    <div class="main-content">
+        <div class="dashboard-header">
+            <h2>Analytics & Reporting Dashboard</h2>
+            <p>Data-driven insights for Devops Easy Learning community management</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card revenue">
+                <div class="metric-value">$130,855</div>
+                <div class="metric-label">Total Revenue</div>
+                <div class="metric-change positive">+15% from last quarter</div>
+            </div>
+            
+            <div class="metric-card members">
+                <div class="metric-value">40</div>
+                <div class="metric-label">Active Members</div>
+                <div class="metric-change positive">+8 new this month</div>
+            </div>
+            
+            <div class="metric-card events">
+                <div class="metric-value">9</div>
+                <div class="metric-label">Upcoming Events</div>
+                <div class="metric-change neutral">$6,200 target revenue</div>
+            </div>
+            
+            <div class="metric-card engagement">
+                <div class="metric-value">18</div>
+                <div class="metric-label">Active Groups</div>
+                <div class="metric-change positive">85% participation rate</div>
+            </div>
+        </div>
+        
+        <div class="charts-section">
+            <div class="chart-container">
+                <div class="chart-title">📈 Financial Analytics - Revenue vs Expenses</div>
+                <div class="chart-placeholder">
+                    Monthly trending chart showing $130,855 revenue spike<br>
+                    vs $0 expenses over time with event correlation
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">🎯 Event Performance Metrics</div>
+                <div class="chart-placeholder">
+                    Event ROI analysis:<br>
+                    Oracle: $2000 target<br>
+                    DevOps20: $1000 target<br>
+                    Dance Club: $2000 target
+                </div>
+            </div>
+        </div>
+        
+        <div class="insights-section">
+            <div class="insight-card">
+                <div class="insight-title">
+                    🌍 Geographic Distribution
+                </div>
+                <ul class="insight-list">
+                    <li>
+                        <span><span class="group-indicator" style="background: #3b82f6;"></span>Houston</span>
+                        <span class="badge medium">1 member</span>
+                    </li>
+                    <li>
+                        <span><span class="group-indicator" style="background: #10b981;"></span>Dallas</span>
+                        <span class="badge medium">1 member</span>
+                    </li>
+                    <li>
+                        <span><span class="group-indicator" style="background: #f59e0b;"></span>Lubbock</span>
+                        <span class="badge high">4 members</span>
+                    </li>
+                    <li>
+                        <span><span class="group-indicator" style="background: #8b5cf6;"></span>General</span>
+                        <span class="badge high">40 members (41.7%)</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-title">
+                    ⚡ Member Engagement Score
+                </div>
+                <ul class="insight-list">
+                    <li>
+                        <span>AWS Group</span>
+                        <span class="badge high">8.3% (8 members)</span>
+                    </li>
+                    <li>
+                        <span>Devops Group</span>
+                        <span class="badge medium">5.2% (5 members)</span>
+                    </li>
+                    <li>
+                        <span>Linux Group</span>
+                        <span class="badge medium">5.2% (5 members)</span>
+                    </li>
+                    <li>
+                        <span>Oracle Group</span>
+                        <span class="badge low">Recently active</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-title">
+                    💰 Financial Insights
+                </div>
+                <ul class="insight-list">
+                    <li>
+                        <span>Revenue per Member</span>
+                        <span class="badge high">$3,271</span>
+                    </li>
+                    <li>
+                        <span>Monthly Dues ($15/member)</span>
+                        <span class="badge medium">$600/month potential</span>
+                    </li>
+                    <li>
+                        <span>Event Fundraising</span>
+                        <span class="badge high">Major revenue source</span>
+                    </li>
+                    <li>
+                        <span>Operating Expenses</span>
+                        <span class="badge low">$0 (optimize this)</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-title">
+                    📱 Platform Usage Analytics
+                </div>
+                <ul class="insight-list">
+                    <li>
+                        <span>Mobile App Usage</span>
+                        <span class="badge high">Active (confirmed)</span>
+                    </li>
+                    <li>
+                        <span>Message Activity</span>
+                        <span class="badge high">18 active chats</span>
+                    </li>
+                    <li>
+                        <span>Group Participation</span>
+                        <span class="badge medium">85% rate</span>
+                    </li>
+                    <li>
+                        <span>Event Attendance</span>
+                        <span class="badge medium">20 total attended</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
